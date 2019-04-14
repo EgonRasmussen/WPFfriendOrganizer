@@ -2,6 +2,7 @@
 using FriendOrganizer.DataAccess;
 using FriendOrganizer.UI.Data;
 using FriendOrganizer.UI.ViewModel;
+using System.Configuration;
 
 namespace FriendOrganizer.UI.Startup
 {
@@ -11,7 +12,7 @@ namespace FriendOrganizer.UI.Startup
         {
             var builder = new ContainerBuilder();
 
-            builder.RegisterType<FriendOrganizerDbContext>().WithParameter("constring", @"Server = (localdb)\mssqllocaldb; Database = FriendOrganizerDb; Trusted_Connection = True;");
+            builder.RegisterType<FriendOrganizerDbContext>().WithParameter("constring", ConfigurationManager.ConnectionStrings["FriendOrganizerDb"].ConnectionString);
             builder.RegisterType<MainWindow>().AsSelf();
             builder.RegisterType<MainViewModel>().AsSelf();
             builder.RegisterType<FriendDataService>().As<IFriendDataService>();
