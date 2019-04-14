@@ -1,36 +1,58 @@
-## Autofac
+## EF Core
 
-I UI-projektet installeres NuGet pakken **Autofac**.
+![EFCore](ArchitectureWithEFCore.png)
 
-I UI-projektet oprettes folderen **Startup** og klassen **Bootstrapper**:
+Installér følgende NuGet pakker til projektet DataAccess:
+
+- Microsoft.EntityFrameworkCore.SqlServer
+- Microsoft.EntityFrameworkCore.Tools
+
+Og installer følgende til UI-projektet:
+
+-- Microsoft.EntityFrameworkCore.SqlServer
+
+Tilføj connectionstring til App.config i UI-projektet (efter <configuration>.<startup>):
+
+```xml
+<connectionStrings>
+  <add name="FriendOrganizerDb" connectionString="Server = (localdb)\mssqllocaldb; Database = FriendOrganizerDb; Trusted_Connection = True;" />
+</connectionStrings>
+```
+
+Husk at lave en reference til System.Configuration.
+
+Opret klassen FriendOrganizerDbContext DataAccess projektet:
 
 ```c#
-public class Boostrapper
+public class FriendOrganizerDbContext : DbContext
 {
-    public IContainer Bootstrap()
+    public DbSet<Friend> Friends { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var builder = new ContainerBuilder();
+        optionsBuilder.UseSqlServer(ConfigurationManager.ConnectionStrings["FriendOrganizerDb"].ToString())
+        .EnableSensitiveDataLogging(true)
+        .UseLoggerFactory(new ServiceCollection()
+        .AddLogging(builder => builder.AddConsole()
+            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information))
+            .BuildServiceProvider().GetService<ILoggerFactory>());
 
-        builder.RegisterType<MainWindow>().AsSelf();
-        builder.RegisterType<MainViewModel>().AsSelf();
-        builder.RegisterType<FriendDataService>().As<IFriendDataService>();
+    }
 
-        return builder.Build();
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Friend>().HasData(
+            new Friend { FirstName = "Thomas", LastName = "Huber" },
+            new Friend { FirstName = "Urs", LastName = "Meier" },
+            new Friend { FirstName = "Erkan", LastName = "Egin" },
+            new Friend { FirstName = "Sara", LastName = "Huber" }
+            );
     }
 }
 ```
 
-Nu skal App.xaml.cs klassen ændres:
 
-```c#
-public partial class App : Application
-{
-    private void Application_Startup(object sender, StartupEventArgs e)
-    {
-        var container = new Boostrapper().Bootstrap();
 
-        var mainWindow = container.Resolve<MainWindow>();
-        mainWindow.Show();
-    }
-}
-```
+
+
+

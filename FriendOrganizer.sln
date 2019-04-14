@@ -11,6 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendOrganizer.UI", "Frien
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F7FD7172-4D3D-48BB-826D-9DA53F6A0EF0}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\..\Desktop\WpfFriendsOrganizer\ArchitectureWithEFCore.png = ..\..\..\Desktop\WpfFriendsOrganizer\ArchitectureWithEFCore.png
 		MVVMPattern.png = MVVMPattern.png
 		README.md = README.md
 	EndProjectSection
