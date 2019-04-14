@@ -1,123 +1,36 @@
-## FriendDataService
+## Autofac
 
-I UI-projektet oprettes en folder kaldet **Data** og en **FriendDataService** klasse og tilhørende interface:
+I UI-projektet installeres NuGet pakken **Autofac**.
+
+I UI-projektet oprettes folderen **Startup** og klassen **Bootstrapper**:
 
 ```c#
-public interface IFriendDataService
+public class Boostrapper
 {
-    IEnumerable<Friend> GetAll();
-}
-```
-Og implementationen:
-```c#
-public class FriendDataService : IFriendDataService
-{
-    public IEnumerable<Friend> GetAll()
+    public IContainer Bootstrap()
     {
-        // TODO: Load data from real database
-        yield return new Friend { FirstName = "Thomas", LastName = "Huber" };
-        yield return new Friend { FirstName = "Andreas", LastName = "Boehler" };
-        yield return new Friend { FirstName = "Julia", LastName = "Huber" };
-        yield return new Friend { FirstName = "Chrissi", LastName = "Egin" };
-    }
-}
-```
-.  
-.
-## MVVM Pattern
+        var builder = new ContainerBuilder();
 
-![MVVM Pattern](MVVMPattern.png)
+        builder.RegisterType<MainWindow>().AsSelf();
+        builder.RegisterType<MainViewModel>().AsSelf();
+        builder.RegisterType<FriendDataService>().As<IFriendDataService>();
 
-## ViewModel
-I UI-projektet oprettes folderen **ViewModel** og en klasse kaldet **ViewModelBase**:
-```c#
-public class ViewModelBase : INotifyPropertyChanged
-{
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        return builder.Build();
     }
 }
 ```
 
-I ViewModel folderen oprettes klassen **MainWiewModel**. 
-Her oprettes en Observable collection Friends, hvori alle Friend-objekterne indlæses.
-En property SelectedFriend benyttes til at pege på en valgt Friend, med tilhørende Changenotification:
+Nu skal App.xaml.cs klassen ændres:
 
 ```c#
-public class MainWiewModel : ViewModelBase
+public partial class App : Application
 {
-    private IFriendDataService _friendDataService;
-    private Friend _selectedFriend;
-
-    public MainViewModel(IFriendDataService friendDataService)
+    private void Application_Startup(object sender, StartupEventArgs e)
     {
-        Friends = new ObservableCollection<Friend>();
-        _friendDataService = friendDataService;
-    }
+        var container = new Boostrapper().Bootstrap();
 
-    public void Load()
-    {
-        var friends = _friendDataService.GetAll();
-        Friends.Clear();
-        foreach (var friend in friends)
-        {
-            Friends.Add(friend);
-        }
-    }
-
-    public ObservableCollection<Friend> Friends { get; set; }
-
-    public Friend SelectedFriend
-    {
-        get { return _selectedFriend; }
-        set
-        {
-            _selectedFriend = value;
-            OnPropertyChanged();
-        }
+        var mainWindow = container.Resolve<MainWindow>();
+        mainWindow.Show();
     }
 }
 ```
-
-### Instantiering af ViewModel
-View'et skal have en reference til ViewModel-objektet og det sker i MainWindow.xaml.cs. 
-Det er også her at Load metoden til indlæsning af Friend-objekter kaldes:
-
-```c#
-public partial class MainWindow : Window
-{
-    private MainViewModel _viewModel;
-
-    public MainWindow(MainViewModel viewModel)
-    {
-        InitializeComponent();
-        _viewModel = viewModel;
-        DataContext = _viewModel;
-        Loaded += MainWindow_Loaded;
-    }
-
-    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-    {
-        _viewModel.Load();
-    }
-}
-```
-
-Constructoren i MainWindow skal modtage et viewModel objekt, som oprettes i App.xaml.cs.
-Først fjernes ```StartupUri``` i App.xaml og erstattes med et event ```Startup="Application_Startup"``` og en eventhandler:
-```c#
-private void Application_Startup(object sender, StartupEventArgs e)
-{
-    var mainWindow = new MainWindow(
-        new MainViewModel(
-            new FriendDataService()));
-    mainWindow.Show();
-}
-```
-
-## Opret UI
-Opret xaml koden i MainWindow.xaml, se koden.
-
