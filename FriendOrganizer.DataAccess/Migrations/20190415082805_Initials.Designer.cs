@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FriendOrganizer.DataAccess.Migrations
 {
     [DbContext(typeof(FriendOrganizerDbContext))]
-    [Migration("20190415064614_Initials")]
+    [Migration("20190415082805_Initials")]
     partial class Initials
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

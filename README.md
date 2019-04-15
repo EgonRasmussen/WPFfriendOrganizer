@@ -9,7 +9,8 @@ Installér følgende NuGet pakker til projektet DataAccess:
 
 Og installer følgende til UI-projektet:
 
--- Microsoft.EntityFrameworkCore.SqlServer
+- Microsoft.EntityFrameworkCore.SqlServer
+- Microsoft.EntityFrameworkCore.Design
 
 Tilføj connectionstring til App.config i UI-projektet (efter <configuration>.<startup>):
 
@@ -19,7 +20,7 @@ Tilføj connectionstring til App.config i UI-projektet (efter <configuration>.<st
 </connectionStrings>
 ```
 
-Husk at lave en reference til System.Configuration.
+Husk at lave en reference i UI-projektet til ```System.Configuration```.
 
 Opret klassen FriendOrganizerDbContext DataAccess projektet:
 
