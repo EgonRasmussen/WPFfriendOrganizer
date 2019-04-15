@@ -8,19 +8,16 @@ namespace FriendOrganizer.UI.Data
 {
     public class FriendDataService : IFriendDataService
     {
-        private FriendOrganizerDbContext _contextCreator;
+        private FriendOrganizerDbContext _context;
 
-        public FriendDataService(FriendOrganizerDbContext contextCreator)
+        public FriendDataService(FriendOrganizerDbContext context)
         {
-            _contextCreator = contextCreator;
+            _context = context;
         }
 
         public async Task<List<Friend>> GetAllAsync()
         {
-            using (var ctx = _contextCreator)
-            {
-                return await ctx.Friends.AsNoTracking().ToListAsync();
-            }
+                return await _context.Friends.AsNoTracking().ToListAsync();
         }
     }
 }

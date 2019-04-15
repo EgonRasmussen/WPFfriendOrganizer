@@ -5,23 +5,13 @@ namespace FriendOrganizer.DataAccess
 {
     public class FriendOrganizerDbContext : DbContext
     {
-        private string _constring;
-
-        public FriendOrganizerDbContext()
-        {
-            // Benyttes kun til Migration
-            _constring = @"Server = (localdb)\mssqllocaldb; Database = FriendOrganizerDb; Trusted_Connection = True;";
-        }
-        public FriendOrganizerDbContext(string constring)
-        {
-            _constring = constring;
-        }
+        public FriendOrganizerDbContext(DbContextOptions<FriendOrganizerDbContext> options) : base(options)
+        {}
 
         public DbSet<Friend> Friends { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(_constring);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
