@@ -81,6 +81,36 @@ public class Boostrapper : IDesignTimeDbContextFactory<FriendOrganizerDbContext>
     }
 }
 ```
+.  
+.
+## DataService
+Der laves ændringer i DataService.cs, som injecter DbContext. Desuden benyttes asynkrone kald:
+
+Her ses interfacet:
+```c#
+public interface IFriendDataService
+{
+    Task<List<Friend>> GetAllAsync();
+}
+```
+
+Og her ses implementationen:
+```c#
+public class FriendDataService : IFriendDataService
+{
+    private FriendOrganizerDbContext _context;
+
+    public FriendDataService(FriendOrganizerDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<List<Friend>> GetAllAsync()
+    {
+            return await _context.Friends.AsNoTracking().ToListAsync();
+    }
+}
+```
 
 
 
