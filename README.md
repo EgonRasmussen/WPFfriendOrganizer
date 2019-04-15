@@ -12,7 +12,7 @@ Og installer følgende til UI-projektet:
 - Microsoft.EntityFrameworkCore.SqlServer
 - Microsoft.EntityFrameworkCore.Design
 
-Tilføj connectionstring til App.config i UI-projektet (efter <configuration>.<startup>):
+Tilføj connectionstring til App.config i UI-projektet (efter ```<configuration>.<startup>```):
 
 ```xml
 <connectionStrings>
@@ -27,34 +27,60 @@ Opret klassen FriendOrganizerDbContext DataAccess projektet:
 ```c#
 public class FriendOrganizerDbContext : DbContext
 {
+    public FriendOrganizerDbContext(DbContextOptions<FriendOrganizerDbContext> options) : base(options)
+    {}
+
     public DbSet<Friend> Friends { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(ConfigurationManager.ConnectionStrings["FriendOrganizerDb"].ToString())
-        .EnableSensitiveDataLogging(true)
-        .UseLoggerFactory(new ServiceCollection()
-        .AddLogging(builder => builder.AddConsole()
-            .AddFilter(DbLoggerCategory.Database.Command.Name, LogLevel.Information))
-            .BuildServiceProvider().GetService<ILoggerFactory>());
-
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Friend>().HasData(
-            new Friend { FirstName = "Thomas", LastName = "Huber" },
-            new Friend { FirstName = "Urs", LastName = "Meier" },
-            new Friend { FirstName = "Erkan", LastName = "Egin" },
-            new Friend { FirstName = "Sara", LastName = "Huber" }
+            new Friend { Id = 1, FirstName = "Thomas", LastName = "Huber" },
+            new Friend { Id = 2, FirstName = "Urs", LastName = "Meier" },
+            new Friend { Id = 3, FirstName = "Erkan", LastName = "Egin" },
+            new Friend { Id = 4, FirstName = "Sara", LastName = "Huber" }
             );
     }
 }
 ```
 
-No database provider has been configured for this DbContext. A provider can be configured by overriding the DbContext.OnConfiguring method or by using AddDbContext on the application service provider. If AddDbContext is used, then also ensure that your DbContext type accepts a DbContextOptions<TContext> object in its constructor and passes it to the base constructor for DbContext.
+I Bootstrapper klassen skal EF Core registreres med en tilhørende DbContextOptions parameter.
 
+Imidlertid er Autofac servicen ikke startet op på det design tidspunkt hvor vi
+evt. ønsker at lave en Migration. Derfor skal Bootstrapper klassen implementere
+```IDesignTimeDbContextFactory<T>``` og metoden ```CreateDbContext()```som opretter en instans
+af DbContext:
 
+```c#
+public class Boostrapper : IDesignTimeDbContextFactory<FriendOrganizerDbContext>
+{
+    DbContextOptions<FriendOrganizerDbContext> dbContextOptions = new DbContextOptionsBuilder<FriendOrganizerDbContext>()
+        .UseSqlServer(ConfigurationManager.ConnectionStrings["FriendOrganizerDb"]
+        .ConnectionString)
+        .Options;
+
+    public IContainer Bootstrap()
+    {
+        var builder = new ContainerBuilder();
+
+        builder.RegisterType<FriendOrganizerDbContext>().WithParameter("options", dbContextOptions).InstancePerLifetimeScope();
+        builder.RegisterType<MainWindow>().AsSelf();
+        builder.RegisterType<MainViewModel>().AsSelf();
+        builder.RegisterType<FriendDataService>().As<IFriendDataService>();
+
+        return builder.Build();
+    }
+
+    public FriendOrganizerDbContext CreateDbContext(string[] args)
+    {
+        return new FriendOrganizerDbContext(dbContextOptions);
+    }
+}
+```
 
 
 
