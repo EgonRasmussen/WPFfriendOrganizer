@@ -1,6 +1,6 @@
 ## FriendDataService
 
-I UI-projektet oprettes en folder kaldet **Data** og en **FriendDataService** klasse og tilhørende interface:
+I UI-projektet oprettes en folder kaldet **Data** og en **FriendDataService** klasse og tilhÃ¸rende interface:
 
 ```c#
 public interface IFriendDataService
@@ -26,7 +26,7 @@ public class FriendDataService : IFriendDataService
 .
 ## MVVM Pattern
 
-![MVVM Pattern](MVVMPattern.png)
+![MVVM Pattern](MVVMPattern.pn)
 
 ## ViewModel
 I UI-projektet oprettes folderen **ViewModel** og en klasse kaldet **ViewModelBase**:
@@ -43,8 +43,8 @@ public class ViewModelBase : INotifyPropertyChanged
 ```
 
 I ViewModel folderen oprettes klassen **MainWiewModel**. 
-Her oprettes en Observable collection Friends, hvori alle Friend-objekterne indlæses.
-En property SelectedFriend benyttes til at pege på en valgt Friend, med tilhørende Changenotification:
+Her oprettes en Observable collection Friends, hvori alle Friend-objekterne indlÃ¦ses.
+En property SelectedFriend benyttes til at pege pÃ¥ en valgt Friend, med tilhÃ¸rende Changenotification:
 
 ```c#
 public class MainWiewModel : ViewModelBase
@@ -84,7 +84,7 @@ public class MainWiewModel : ViewModelBase
 
 ### Instantiering af ViewModel
 View'et skal have en reference til ViewModel-objektet og det sker i MainWindow.xaml.cs. 
-Det er også her at Load metoden til indlæsning af Friend-objekter kaldes:
+Det er ogsÃ¥ her at Load metoden til indlÃ¦sning af Friend-objekter kaldes:
 
 ```c#
 public partial class MainWindow : Window
@@ -107,7 +107,7 @@ public partial class MainWindow : Window
 ```
 
 Constructoren i MainWindow skal modtage et viewModel objekt, som oprettes i App.xaml.cs.
-Først fjernes ```StartupUri``` i App.xaml og erstattes med et event ```Startup="Application_Startup"``` og en eventhandler:
+FÃ¸rst fjernes ```StartupUri``` i App.xaml og erstattes med et event ```Startup="Application_Startup"``` og en eventhandler:
 ```c#
 private void Application_Startup(object sender, StartupEventArgs e)
 {
