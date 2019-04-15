@@ -26,7 +26,7 @@ public class FriendDataService : IFriendDataService
 .
 ## MVVM Pattern
 
-![MVVM Pattern](MVVMPattern.pn)
+![MVVM Pattern](MVVMPattern.png)
 
 ## ViewModel
 I UI-projektet oprettes folderen **ViewModel** og en klasse kaldet **ViewModelBase**:
